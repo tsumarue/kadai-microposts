@@ -23,10 +23,12 @@ class UsersController extends Controller
     public function show($id)                               
     {                 
         $user = User::findOrFail($id);
+        $microposts = $user->microposts()->paginate(10);
 
         // ユーザ詳細ビューでそれを表示
         return view('users.show', [
             'user' => $user,
+            'microposts' => $microposts,
         ]);
     }          
     
@@ -69,6 +71,20 @@ class UsersController extends Controller
         return view('users.followers', [
             'user' => $user,
             'users' => $followers,
+        ]);
+    }
+    
+        public function favorites($id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->loadRelationshipCounts();
+
+        $favorites = $user->favorites()->paginate(10);
+
+        return view('users.favorites', [
+            'user' => $user,
+            'microposts' => $favorites,
         ]);
     }
 }
